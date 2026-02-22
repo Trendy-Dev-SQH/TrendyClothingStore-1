@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trendy Clothing Store</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#111;
+    color:white;
+}
+
+/* NAV */
+nav{
+    display:flex;
+    justify-content:space-between;
+    padding:20px 50px;
+    background:#000;
+}
+
+nav a{
+    color:white;
+    text-decoration:none;
+    margin-left:20px;
+}
+
+/* HERO */
+.hero{
+    height:90vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
+}
+
+.hero h1{
+    font-size:80px;
+    letter-spacing:5px;
+}
+
+.hero p{
+    margin:20px 0;
+    font-size:20px;
+}
+
+.btn{
+    padding:10px 20px;
+    background:white;
+    color:black;
+    border:none;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+/* CATALOGO */
+.catalogo{
+    padding:50px;
+}
+
+.filtro{
+    margin-bottom:30px;
+}
+
+.filtro button{
+    margin-right:10px;
+    padding:8px 15px;
+    cursor:pointer;
+}
+
+.productos{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:30px;
+}
+
+.card{
+    background:#1a1a1a;
+    padding:20px;
+    border-radius:10px;
+    text-align:center;
+}
+
+.card img{
+    width:100%;
+    height:200px;
+    object-fit:cover;
+    margin-bottom:15px;
+}
+
+.card h3{
+    margin-bottom:10px;
+}
+
+.card button{
+    margin-top:10px;
+}
+
+/* CARRITO */
+.carrito{
+    position:fixed;
+    right:0;
+    top:0;
+    width:300px;
+    height:100vh;
+    background:#000;
+    padding:20px;
+    overflow-y:auto;
+    border-left:2px solid #333;
+}
+
+.carrito h2{
+    margin-bottom:20px;
+}
+
+.item-carrito{
+    margin-bottom:15px;
+    border-bottom:1px solid #333;
+    padding-bottom:10px;
+}
+
+.total{
+    margin-top:20px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+footer{
+    padding:20px;
+    text-align:center;
+    background:#000;
+    margin-top:50px;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div><strong>TRENDY</strong></div>
+    <div>
+        <a href="#">Inicio</a>
+        <a href="#catalogo">Catálogo</a>
+        <a href="#">Contacto</a>
+    </div>
+</nav>
+
+<section class="hero">
+    <h1>TRENDY</h1>
+    <p>Clothing Store – Estilo que habla</p>
+    <button class="btn" onclick="document.getElementById('catalogo').scrollIntoView()">Ver colección</button>
+</section>
+
+<section class="catalogo" id="catalogo">
+    <h2>CATÁLOGO 2026</h2>
+
+    <div class="filtro">
+        <button onclick="filtrar('todos')">Todos</button>
+        <button onclick="filtrar('hombre')">Hombre</button>
+        <button onclick="filtrar('mujer')">Mujer</button>
+    </div>
+
+    <div class="productos" id="productos"></div>
+</section>
+
+<div class="carrito">
+    <h2>Tu Carrito 🛒</h2>
+    <div id="lista-carrito"></div>
+    <div class="total">Total: $<span id="total">0</span></div>
+    <button class="btn" style="width:100%; margin-top:15px;">Finalizar Compra</button>
+</div>
+
+<footer>
+    <p>Prendas tendencia última colección</p>
+    <p>@Trendy_oficial | 317 123 4567</p>
+</footer>
+
+<script>
+const productos = [
+    {nombre:"Buzo Undergold", precio:150000, categoria:"hombre", img:"https://via.placeholder.com/300x200"},
+    {nombre:"Camisa Clermont", precio:85000, categoria:"hombre", img:"https://via.placeholder.com/300x200"},
+    {nombre:"Bolso Burberry", precio:75000, categoria:"mujer", img:"https://via.placeholder.com/300x200"},
+    {nombre:"Chaqueta NorthFace", precio:160000, categoria:"hombre", img:"https://via.placeholder.com/300x200"},
+    {nombre:"Camiseta Nike", precio:100000, categoria:"hombre", img:"https://via.placeholder.com/300x200"},
+    {nombre:"Buzo Champion", precio:150000, categoria:"mujer", img:"https://via.placeholder.com/300x200"},
+];
+
+let carrito = [];
+
+function mostrarProductos(lista){
+    const contenedor = document.getElementById("productos");
+    contenedor.innerHTML="";
+    lista.forEach((producto,index)=>{
+        contenedor.innerHTML+=`
+            <div class="card">
+                <img src="${producto.img}">
+                <h3>${producto.nombre}</h3>
+                <p>$${producto.precio}</p>
+                <button class="btn" onclick="agregarCarrito(${index})">Agregar</button>
+            </div>
+        `;
+    });
+}
+
+function filtrar(categoria){
+    if(categoria==="todos"){
+        mostrarProductos(productos);
+    }else{
+        const filtrados = productos.filter(p=>p.categoria===categoria);
+        mostrarProductos(filtrados);
+    }
+}
+
+function agregarCarrito(index){
+    carrito.push(productos[index]);
+    actualizarCarrito();
+}
+
+function eliminarItem(i){
+    carrito.splice(i,1);
+    actualizarCarrito();
+}
+
+function actualizarCarrito(){
+    const lista = document.getElementById("lista-carrito");
+    lista.innerHTML="";
+    let total=0;
+
+    carrito.forEach((item,i)=>{
+        total+=item.precio;
+        lista.innerHTML+=`
+            <div class="item-carrito">
+                <p>${item.nombre}</p>
+                <p>$${item.precio}</p>
+                <button onclick="eliminarItem(${i})">Eliminar</button>
+            </div>
+        `;
+    });
+
+    document.getElementById("total").innerText=total;
+}
+
+mostrarProductos(productos);
+</script>
+
+</body>
+</html>
